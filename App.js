@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
 
 export default function App() {
-
+    
     const [ lastNumber, setLastNumber ] = useState();
     const [ currentNumber, setCurrentNumber ] = useState('');
     //chuỗi số vừa nhập

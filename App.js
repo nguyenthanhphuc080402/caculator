@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
 
+const ArrHis = [];
+
 export default function App() {
-    
+
     const [ lastNumber, setLastNumber ] = useState();
     const [ currentNumber, setCurrentNumber ] = useState('');
     //chuỗi số vừa nhập
     const operators = [ "AC", "DEL", "%", "/", 7, 8, 9, "*", 4, 5, 6, "-", 1, 2, 3, "+", "âm", 0, ".", "=" ];
 
+    var result;
 
-       const styles = StyleSheet.create({
+      const styles = StyleSheet.create({
       main: {
         flex: 1,
         display: 'flex',
@@ -41,6 +44,15 @@ export default function App() {
         fontSize: 26,
         paddingRight: 15,
         alignSelf: "flex-end",
+      },
+
+      textHis: {
+        color: "#000",
+        fontSize: 30,
+        paddingLeft: 50,
+        paddingTop: 100,
+        paddingRight: 240,
+      
       },
     
       textResult: {
@@ -107,8 +119,10 @@ export default function App() {
           setCurrentNumber(currentNumber.slice(0, -1));
         return;
         case '=':
-          setLastNumber(currentNumber + "=");
+          setLastNumber(currentNumber + " = ");
           calculate()
+          ArrHis.push(currentNumber + " = " + result + " ");
+
         return;
         case 'âm':
           var change = currentNumber * -1;
@@ -137,19 +151,19 @@ export default function App() {
       if(!isNaN(secondNumber)){
         switch(operation){
           case '+':
-            var result = firstNumber + secondNumber;
+            result = firstNumber + secondNumber;
             setCurrentNumber(result);
           return;
           case '-':
-            var result = firstNumber - secondNumber;
+            result = firstNumber - secondNumber;
             setCurrentNumber(result);
           return;
           case '*':
-            var result = firstNumber * secondNumber;
+            result = firstNumber * secondNumber;
             setCurrentNumber(result);
           return;
           case '/':
-            var result = firstNumber / secondNumber;
+            result = firstNumber / secondNumber;
             setCurrentNumber(result);
           return;
           default: 
@@ -162,8 +176,12 @@ export default function App() {
       }
     }
 
+
   return (
     <View style={styles.main}>
+      <Text style={styles.textHis}>
+            {ArrHis + "" }
+          </Text>
       <View 
         style={styles.resultContainer}>
         <TouchableOpacity style={styles.themeTouchable}>
@@ -175,8 +193,8 @@ export default function App() {
           </Text>
           <Text style={styles.textResult}>
             {currentNumber}
-          </Text>
-
+          </Text>          
+          
         </View>
       </View>
     

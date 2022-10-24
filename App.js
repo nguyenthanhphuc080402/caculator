@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
-
-const ArrHis = [];
+import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
+import { SearchBar } from 'react-native-elements'
 
 export default function App() {
 
     const [ lastNumber, setLastNumber ] = useState();
     const [ currentNumber, setCurrentNumber ] = useState('');
+    const [ history, setHistory] = useState([]);
+    const [ search, setSearch] = useState();
+    const [ text, setText] = useState('');
     //chuỗi số vừa nhập
     const operators = [ "AC", "DEL", "%", "/", 7, 8, 9, "*", 4, 5, 6, "-", 1, 2, 3, "+", "âm", 0, ".", "=" ];
+
 
     var result;
 
@@ -46,14 +49,6 @@ export default function App() {
         alignSelf: "flex-end",
       },
 
-      textHis: {
-        color: "#000",
-        fontSize: 30,
-        paddingLeft: 50,
-        paddingTop: 100,
-        paddingRight: 240,
-      
-      },
     
       textResult: {
         color:"#000",
@@ -85,6 +80,16 @@ export default function App() {
       operatorsText: {
         color: "#FFF",
         fontSize: 24,
+      },
+      item: {
+        backgroundColor: '#808080',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        fontSize: 24
+      },
+      title: {
+        fontSize: 32,
       }
     });
     
@@ -121,7 +126,15 @@ export default function App() {
         case '=':
           setLastNumber(currentNumber + " = ");
           calculate()
-          ArrHis.push(currentNumber + " = " + result + " ");
+          var a = history
+          console.log(a)
+          a.push({
+            exp: currentNumber,
+            res: result
+      });
+          setHistory(a);
+          setSearch(a);
+          console.log(history)
 
         return;
         case 'âm':
@@ -175,13 +188,39 @@ export default function App() {
         Alert.alert("Invalid format");
       }
     }
+    const Item = ({ title }) => (
+      <View style={styles.item}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+    );
 
+    
 
   return (
     <View style={styles.main}>
-      <Text style={styles.textHis}>
-            {ArrHis + "" }
-          </Text>
+      <View style={styles.history}>
+      <SearchBar 
+        placeholder="Type to search"
+        onChangeText = {newText => {
+          setText(newText);
+          var s = history.filter((value, index, arr) => {
+            return value.exp.toString().includes(newText) || value.res.toString().includes(newText);
+          });
+          setSearch(s);
+        }}
+        value={text}/>
+
+    </View>
+      <SafeAreaView style={styles.container}>  
+      <FlatList
+        data={search}
+        renderItem={({item}) => (
+        <Text style={styles.item}>{item.exp} = {item.res}</Text>
+      )}
+
+        keyExtractor={item => item.id}
+      />
+    </SafeAreaView>
       <View 
         style={styles.resultContainer}>
         <TouchableOpacity style={styles.themeTouchable}>

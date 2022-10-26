@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
-
+import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
+import { AwesomeButton } from "react-awesome-button";
+import { SearchBar } from 'react-native-elements'
+import AwesomeButtonStyles from 'react-awesome-button/src/styles/styles.scss';
 export default function App() {
-    
+
     const [ lastNumber, setLastNumber ] = useState();
     const [ currentNumber, setCurrentNumber ] = useState('');
+    const [ history, setHistory] = useState([]);
+    const [ search, setSearch] = useState();
+    const [ text, setText] = useState('');
+    const [show, setShow] = useState(false)
     //chuỗi số vừa nhập
     const operators = [ "AC", "DEL", "%", "/", 7, 8, 9, "*", 4, 5, 6, "-", 1, 2, 3, "+", "âm", 0, ".", "=" ];
 
 
-       const styles = StyleSheet.create({
+    var result;
+
+      const styles = StyleSheet.create({
       main: {
         flex: 1,
         display: 'flex',
@@ -42,6 +50,7 @@ export default function App() {
         paddingRight: 15,
         alignSelf: "flex-end",
       },
+
     
       textResult: {
         color:"#000",
@@ -73,7 +82,28 @@ export default function App() {
       operatorsText: {
         color: "#FFF",
         fontSize: 24,
-      }
+      },
+      item: {
+        backgroundColor: '#808080',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        fontSize: 24
+      },
+      title: {
+        fontSize: 32,
+      },
+
+      button: {
+        backgroundColor: "#6495ed",
+        border: "none",
+        padding: 10,
+        color: "#FFF",
+        fontSize: 30,
+        marginBottom: 50,
+        cursor: 'pointer'
+      },
+
     });
     
 
@@ -107,8 +137,18 @@ export default function App() {
           setCurrentNumber(currentNumber.slice(0, -1));
         return;
         case '=':
-          setLastNumber(currentNumber + "=");
+          setLastNumber(currentNumber + " = ");
           calculate()
+          var a = history
+          console.log(a)
+          a.push({
+            exp: currentNumber,
+            res: result
+      });
+          setHistory(a);
+          setSearch(a);
+          console.log(history)
+
         return;
         case 'âm':
           var change = currentNumber * -1;
@@ -137,19 +177,19 @@ export default function App() {
       if(!isNaN(secondNumber)){
         switch(operation){
           case '+':
-            var result = firstNumber + secondNumber;
+            result = firstNumber + secondNumber;
             setCurrentNumber(result);
           return;
           case '-':
-            var result = firstNumber - secondNumber;
+            result = firstNumber - secondNumber;
             setCurrentNumber(result);
           return;
           case '*':
-            var result = firstNumber * secondNumber;
+            result = firstNumber * secondNumber;
             setCurrentNumber(result);
           return;
           case '/':
-            var result = firstNumber / secondNumber;
+            result = firstNumber / secondNumber;
             setCurrentNumber(result);
           return;
           default: 
@@ -161,54 +201,94 @@ export default function App() {
         Alert.alert("Invalid format");
       }
     }
+    const Item = ({ title }) => (
+      <View style={styles.item}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+    );
 
+    const text_ = show ? 'Caculate':'History and Search';
   return (
-    <View style={styles.main}>
-      <View 
-        style={styles.resultContainer}>
-        <TouchableOpacity style={styles.themeTouchable}>
-        </TouchableOpacity>
+    <>
+      {/* <AwesomeButton>Text</AwesomeButton> */}
+      <View style={styles.main}>
+      <AwesomeButton style={styles.button} cssModule={AwesomeButtonStyles} type="secondary" onPress={()=>setShow(!show)} >{text_}</AwesomeButton>
+        {/* Search */}
+        {show?<>
+          <View style={styles.history}>
+            <SearchBar 
+              placeholder="Type to search"
+              onChangeText = {newText => {
+                setText(newText);
+                var s = history.filter((value, index, arr) => {
+                  return value.exp.toString().includes(newText) || value.res.toString().includes(newText);
+                });
+                setSearch(s);
+              }}
+              value={text}/>
+          </View>
 
-        <View style={styles.textContainer}>
-          <Text style={styles.textHistory}>
-            {lastNumber}
-          </Text>
-          <Text style={styles.textResult}>
-            {currentNumber}
-          </Text>
+        {/* History */}
+          <SafeAreaView style={styles.container}>  
+            <FlatList
+              data={search}
+              renderItem={({item}) => (
+              <Text style={styles.item}>{item.exp} = {item.res}</Text>
+            )}
 
-        </View>
+              keyExtractor={item => item.id}
+            />
+          </SafeAreaView>
+        </>: null}
+
+        {/* Result */}
+        {  !show?      
+        <>
+          <View 
+            style={styles.resultContainer}>
+            <TouchableOpacity style={styles.themeTouchable}></TouchableOpacity>
+            <View style={styles.textContainer}>
+              <Text style={styles.textHistory}>
+                {lastNumber}
+              </Text>
+              <Text style={styles.textResult}>
+                {currentNumber}
+              </Text>          
+            </View>
+          </View>
+        
+          {/* calculate */}
+          <View style={styles.operatorContainer}>
+              {
+                operators.map((char) => (
+                  (char) === 'AC' ?
+                    <TouchableOpacity
+                      key={char} 
+                      style={[styles.operators, {backgroundColor:'#FF024A'}]}
+                      onPress={() => handleButtonPress(char)}
+                    >
+                      <Text style={styles.operatorsText}>{char}</Text>
+                    </TouchableOpacity>
+                  :
+                    <TouchableOpacity 
+                      key={char} 
+                      style={[styles.operators, {
+                        backgroundColor: typeof(char) === 'number'  || (char) === 'DEL'  || (char) === '%' || (char) === 'âm' || (char) === '.'  ? 
+                          '#282828'
+                          :
+                          '#ff9f00'
+                      }]}
+                      onPress={() => handleButtonPress(char)}
+                    >
+                      {/* Ký tự bên trong nút bấm */}
+                      <Text style={styles.operatorsText}>{char}</Text>
+                    </TouchableOpacity>
+
+                ))
+              }
+          </View>
+        </>:null}
       </View>
-    
-      <View style={styles.operatorContainer}>
-          {
-            operators.map((char) => (
-               (char) === 'AC' ?
-                <TouchableOpacity
-                  key={char} 
-                  style={[styles.operators, {backgroundColor:'#FF024A'}]}
-                  onPress={() => handleButtonPress(char)}
-                >
-                  <Text style={styles.operatorsText}>{char}</Text>
-                </TouchableOpacity>
-              :
-                <TouchableOpacity 
-                  key={char} 
-                  style={[styles.operators, {
-                    backgroundColor: typeof(char) === 'number'  || (char) === 'DEL'  || (char) === '%' || (char) === 'âm' || (char) === '.'  ? 
-                      '#282828'
-                      :
-                      '#ff9f00'
-                  }]}
-                  onPress={() => handleButtonPress(char)}
-                >
-                  {/* Ký tự bên trong nút bấm */}
-                  <Text style={styles.operatorsText}>{char}</Text>
-                </TouchableOpacity>
-
-            ))
-          }
-      </View>
-    </View>
+    </>
     );
 }

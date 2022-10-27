@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar } from 'react-native';
+import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar, Button } from 'react-native';
 import { AwesomeButton } from "react-awesome-button";
 import { SearchBar } from 'react-native-elements'
 import AwesomeButtonStyles from 'react-awesome-button/src/styles/styles.scss';
@@ -95,23 +95,28 @@ export default function App() {
       },
 
       button: {
+        textAlign:'center',
+        justifyContent:'center',
         backgroundColor: "#6495ed",
         border: "none",
         padding: 10,
-        color: "#FFF",
         fontSize: 30,
+        height:50,
         cursor: 'pointer',
       },
-
+      
+      text_: {
+        fontSize: 30,
+        color: "#FFF",
+      }
 
     });
     
 
     function handleButtonPress(buttonPressed){
       if(buttonPressed == "+" || buttonPressed == "-" || buttonPressed == "*" || buttonPressed == "/"){
-        
-        if(currentNumber.toString().indexOf("+") == -1 && currentNumber.toString().indexOf("-") == -1 &&
-         currentNumber.toString().indexOf("*") == -1 && currentNumber.toString().indexOf("/") == -1){
+        if(currentNumber.toString().indexOf("+") == -1 && 
+        currentNumber.toString().indexOf("*") == -1 && currentNumber.toString().indexOf("/") == -1){
           //Nếu trong currentNumber chưa từng nhập toán tử
           //Tạo ra khoảng trắng giữa số và toán tử
           setCurrentNumber(currentNumber + " " + buttonPressed + " ");
@@ -142,9 +147,11 @@ export default function App() {
           }
         return;
         case '=':
+          // console.log(currentNumber);
           setLastNumber(currentNumber + " = ");
           calculate()
           var a = history
+          // console.log(currentNumber)
           a.push({
             exp: currentNumber,
             res: result
@@ -154,11 +161,12 @@ export default function App() {
         return;
         case '+/-':
           var change = currentNumber * -1;
-          isNaN(change) ? Alert.alert("Invalid Format") : setCurrentNumber(change);
+          isNaN(change) ? Alert.alert("Invalid Format") : setCurrentNumber(parseFloat(change));
         return;
         case '%':
           var change = currentNumber / 100;
           isNaN(change) ? Alert.alert("Invalid Format") : setCurrentNumber(change);
+          console.log(typeof(currentNumber));
         return;
       }
       // console.log(currentNumber+"   "+ buttonPressed);
@@ -209,12 +217,12 @@ export default function App() {
       </View>
     );
 
-    const text_ = show ? 'Caculate':'History and Search';
+    const text_ = show ? 'CALCULATE':'HISTORY AND SEARCH';
   return (
     <>
       {/* <AwesomeButton>Text</AwesomeButton> */}
       <View style={styles.main}>
-      <AwesomeButton style={styles.button} cssModule={AwesomeButtonStyles} type="secondary" onPress={()=>setShow(!show)} >{text_}</AwesomeButton>
+      <TouchableOpacity title={text_} style={styles.button} cssModule={AwesomeButtonStyles} type="secondary" onPress={()=>setShow(!show)} ><Text style={styles.text_}>{text_}</Text></TouchableOpacity>
         {/* Search */}
         {show?<>
           <View style={styles.history}>
@@ -235,8 +243,8 @@ export default function App() {
             <FlatList
               data={search}
               renderItem={({item}) => (
-              <Text style={styles.item}>{item.exp} = {item.res}</Text>
-            )}
+                <Text key={item.key} style={styles.item}>{item.exp} = {item.res} </Text>
+                )}
 
               keyExtractor={item => item.id}
             />

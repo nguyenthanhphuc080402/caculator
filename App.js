@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, StatusBar, Button } from 'react-native';
-import { AwesomeButton } from "react-awesome-button";
+import { SafeAreaView, FlatList, StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { SearchBar } from 'react-native-elements'
-import AwesomeButtonStyles from 'react-awesome-button/src/styles/styles.scss';
 export default function App() {
 
     const [ lastNumber, setLastNumber ] = useState();
@@ -222,7 +220,7 @@ export default function App() {
     <>
       {/* <AwesomeButton>Text</AwesomeButton> */}
       <View style={styles.main}>
-      <TouchableOpacity title={text_} style={styles.button} cssModule={AwesomeButtonStyles} type="secondary" onPress={()=>setShow(!show)} ><Text style={styles.text_}>{text_}</Text></TouchableOpacity>
+      <TouchableOpacity title={text_} style={styles.button} type="secondary" onPress={()=>setShow(!show)} ><Text style={styles.text_}>{text_}</Text></TouchableOpacity>
         {/* Search */}
         {show?<>
           <View style={styles.history}>

@@ -12,7 +12,7 @@ export default function App() {
     const [ text, setText] = useState('');
     const [show, setShow] = useState(false)
     //chuỗi số vừa nhập
-    const operators = [ "AC", "DEL", "%", "/", 7, 8, 9, "*", 4, 5, 6, "-", 1, 2, 3, "+", "âm", 0, ".", "=" ];
+    const operators = [ "AC", "DEL", "%", "/", 7, 8, 9, "*", 4, 5, 6, "-", 1, 2, 3, "+", "+/-", 0, ".", "=" ];
 
 
     var result;
@@ -100,9 +100,9 @@ export default function App() {
         padding: 10,
         color: "#FFF",
         fontSize: 30,
-        marginBottom: 50,
-        cursor: 'pointer'
+        cursor: 'pointer',
       },
+
 
     });
     
@@ -134,23 +134,25 @@ export default function App() {
           setCurrentNumber('');
         return;
         case 'DEL':
-          setCurrentNumber(currentNumber.slice(0, -1));
+          if(typeof(currentNumber)=='number'){
+            setLastNumber('');
+            setCurrentNumber('');
+          }else{
+            setCurrentNumber(currentNumber.slice(0, -1));
+          }
         return;
         case '=':
           setLastNumber(currentNumber + " = ");
           calculate()
           var a = history
-          console.log(a)
           a.push({
             exp: currentNumber,
             res: result
       });
           setHistory(a);
           setSearch(a);
-          console.log(history)
-
         return;
-        case 'âm':
+        case '+/-':
           var change = currentNumber * -1;
           isNaN(change) ? Alert.alert("Invalid Format") : setCurrentNumber(change);
         return;
@@ -273,7 +275,7 @@ export default function App() {
                     <TouchableOpacity 
                       key={char} 
                       style={[styles.operators, {
-                        backgroundColor: typeof(char) === 'number'  || (char) === 'DEL'  || (char) === '%' || (char) === 'âm' || (char) === '.'  ? 
+                        backgroundColor: typeof(char) === 'number'  || (char) === 'DEL'  || (char) === '%' || (char) === '+/-' || (char) === '.'  ? 
                           '#282828'
                           :
                           '#ff9f00'
